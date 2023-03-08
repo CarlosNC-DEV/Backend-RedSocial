@@ -66,7 +66,6 @@ export const validarSesion = async(req, res)=>{
             return res.status(401).json("No autorizado");
         }
 
-
         res.json({ _id: usuario._id, usuario: usuario.usuario, correo: usuario.correo });
 
     } catch (error) {

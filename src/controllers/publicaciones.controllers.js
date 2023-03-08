@@ -4,8 +4,22 @@ import Usuarios from '../models/Usuarios.js';
 
 export const verPublicaciones = async(req, res)=>{
     try {
-        const publicaciones = await Publicaciones.find();
+        const publicaciones = await Publicaciones.find().lean();
         res.status(200).json(publicaciones);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error);
+    }
+}
+
+export const verPublicacionesDeUsuario = async (req, res)=>{
+    try {
+        const { id } = req.params;
+        const publicacionUsuario = await Publicaciones.find({ idUsuario: id });
+        if (publicacionUsuario.length === 0) {
+            return res.status(400).json("No tienes ninguna Publicacion");
+        }          
+        res.status(200).json(publicacionUsuario);
     } catch (error) {
         console.log(error);
         res.status(500).json(error);
@@ -32,9 +46,41 @@ export const crearPublicaciones = async(req, res)=>{
         nuevaPublicacion.idImgPublicacion = idImg;
         nuevaPublicacion.urlImgPubllicacion = urlImg;
 
-        const publicacionSvae = await nuevaPublicacion.save()
+        const publicacionSave = await nuevaPublicacion.save()
 
-        res.status(200).json(publicacionSvae);
+        res.status(200).json(publicacionSave);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error);
+    }
+}
+
+export const actualizarPublicacion = async(req, res)=>{
+    try {
+        const { id } = req.params
+        const publicacionActualiza = await Publicaciones.findByIdAndUpdate(id, req.body);
+        if(!publicacionActualiza){
+            return res.status(400).json("No se puedo actualizar la publicacion");
+        }
+
+        res.status(200).json("Publicacion Actualizada")
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error);
+    }
+}
+
+export const eliminarPublicacion = async(req, res)=>{
+    try {
+        const { id } = req.params;
+        const publicacion = await Publicaciones.findByIdAndDelete(id);
+        if(!publicacion){
+            return res.status(400).json("No se pudo eliminar la publicación")
+        }
+
+        res.status(200).json("Publicación Eliminada");
 
     } catch (error) {
         console.log(error);
